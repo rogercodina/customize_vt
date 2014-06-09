@@ -1,0 +1,69 @@
+<?php
+
+/*
+ * Implements hook_menu().
+ */
+function customize_vt_menu(){
+  $items = array();
+
+  $items['admin/config/customize_vt'] = array(
+    'title' => 'Customize vertical tabs',
+    'description' => 'Adjust exporter configuration',
+    'position' => 'right',
+    'weight' => -5,
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('administer site configuration'),
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+  );
+  
+  $items['admin/config/customize_vt/settings'] = array(
+    'title' => 'Customize vertical tabs',
+    'description' => 'Adjust vertical tabs order',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('customize_vt_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'customize_vt.admin.inc',
+  );
+
+  return $items;
+}
+
+/*
+ * Implements hook_enable().
+ */
+function customize_vt_enable() {
+    db_update('system')
+    ->fields(array('weight' => 20))
+    ->condition('type', 'module')
+    ->condition('name', 'customize_vt')
+    ->execute();
+}
+
+/**
+ * Alter order of vertical tab elements
+ * 
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function customize_vt_form_node_form_alter(&$form, &$form_state, $form_id) {
+  //Publishing options
+  $form['options']['#weight'] = variable_get('vt_publishing_opt',-41);
+
+  //Metatags (metatag module) => its weight can be set in "manage form" tab for each content type
+
+  //Menu settings
+  $form['menu']['#weight'] = variable_get('vt_menu_settings',-39);
+
+  //Revision information
+  $form['revision_information']['#weight'] = variable_get('vt_revision',-38);
+
+  //Url path settings
+  $form['path']['#weight'] = variable_get('vt_url_path',-37);
+
+  //Comment settings
+  $form['comment_settings']['#weight'] = variable_get('vt_comment',-36);
+
+  //Author information
+  $form['author']['#weight'] = variable_get('vt_author_info',-35);
+}

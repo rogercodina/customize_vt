@@ -1,0 +1,6 @@
+name = Customize Vertical Tabs
+description = This module allows you to customize vertical tabs order
+version = "7.x-1.0"
+core = "7.x"
+package = "Administration"
+configure = admin/config/customize_vt/settings
